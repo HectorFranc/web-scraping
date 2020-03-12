@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 class WebPage:
     def __init__(self, url, site_config):
-        self.url = url
+        self.url = requests.compat.urljoin(site_config['url'], url)
         self.site_config = site_config
 
         self.request = self._request_page()
@@ -45,6 +45,23 @@ class CoursesListPage(WebPage):
         super().__init__(url, site_config=site_config)
 
     def get_courses_list(self):
-        '''Returns courses (html elements list)'''
+        '''Returns links to courses list'''
         course_anchor_list = self.select(self.site_config['queries']['path_courses_links_list'])
         return [course_anchor.get('href') for course_anchor in course_anchor_list]
+
+
+class CoursePage(WebPage):
+    def __init__(self, url, site_config):
+        super().__init__(url, site_config)
+
+    def get_reviews_link(self):
+        '''Returns link to reviews page'''
+        link_to_reviews_a = self.select(self.site_config['queries']['course_link_anchor'])
+        if link_to_reviews_a:
+            link_to_reviews = link_to_reviews_a[0].get('href')
+            return link_to_reviews
+        else:
+            print('Error')
+            print(f'Not found reviews link in {self.url}')
+
+            return None
