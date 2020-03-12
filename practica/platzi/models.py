@@ -65,3 +65,66 @@ class CoursePage(WebPage):
             print(f'Not found reviews link in {self.url}')
 
             return None
+
+
+class ReviewPage(WebPage):
+    def __init__(self, url, site_config):
+        super().__init__(url, site_config)
+
+    def get_reviews(self):
+        self.reviews = self.select(self.site_config['queries']['reviews_list'])
+
+        if self.reviews:
+            return [self.get_review_info(review) for review in self.reviews]
+        else:
+            return None
+
+    def get_review_info(self, review):
+        return {
+            'user': self.get_user(review),
+            'description': self.get_description(review),
+            'imageUrl': self.get_image_url(review),
+            'stars': self.get_n_stars(review),
+        }
+
+    def get_user(self, review):
+        return review.select(self.site_config['queries']['review_user'])[0].get_text(strip=True)
+
+    def get_description(self, review):
+        return review.select(self.site_config['queries']['review_description'])[0].get_text(strip=True)
+
+    def get_image_url(self, review):
+        return review.select(self.site_config['queries']['review_image'])[0].get('src')
+
+    def get_n_stars(self, review):
+        return len(review.select(self.site_config['queries']['review_stars_list']))
+
+
+class ReviewsPages(WebPage):
+    def __init__(self, url, site_config):
+        super().__init__(url, site_config)
+
+    def get_reviews(self):
+        self._update_min_max_paginator()
+        reviews = []
+        courseName = self.select(self.site_config['queries']['reviews_page_course_name'])
+        if courseName:
+            courseName = courseName[0].get_text(strip=True)
+
+        for paginator_n in range(self.min_paginator, self.max_paginator + 1):
+            actual_review_page = ReviewPage(self.url[:-2] + str(paginator_n), self.site_config)
+            reviews.extend(actual_review_page.get_reviews())
+
+        for review in reviews:
+            review['course'] = courseName
+
+        return reviews
+
+    def _update_min_max_paginator(self):
+        self.min_paginator = 1
+        pagination_links = self.select(self.site_config['queries']['pagination_links_list'])
+        if pagination_links:
+            max_pagination_link = pagination_links[self.site_config['queries']['pagination_max_index']]
+            self.max_paginator = int(max_pagination_link.get_text())
+        else:
+            self.max_paginator = 1
