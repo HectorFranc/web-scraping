@@ -1,0 +1,14 @@
+courses_sites:
+  platzi:
+    url: https://platzi.com/
+    paths: ['arquitecto/', 'escuela-js/']
+    reviews_suburl: 'opiniones/1/'
+    queries:
+      path_courses_links_list: 'div.route div.route-item a'
+      pagination_links_list: 'div.Reviews-pagination > div > div > a'
+      pagination_max_index: -2
+      reviews_list: 'div.Review'
+      review_image: 'div.Review-head > figure > img'
+      review_user: 'div.Review-head > div.Review-info > div.Review-name > strong'
+      review_stars_list: 'div.Review-head > div.Review-info > div.Review-stars > div.icon-star.fulled'
+      review_description: 'div.Review-description'
