@@ -13,6 +13,7 @@ class WebPage:
     def _request_page(self):
         """"Returns request to WebPage url or None"""
         print(f'Requesting {self.url}')
+        request = None
         try:
             request = requests.get(self.url)
             if request.status_code != 200:
@@ -24,20 +25,24 @@ class WebPage:
             print(e)
             print('\n')
 
-        return request or None
+        return request
 
     def _get_html_from_request(self, request, parser='lxml'):
         """Returns request text or None"""
         print(f'Parsing html from {self.url}')
+        text = None
         try:
             text = BeautifulSoup(request.text, parser)
         except Exception as e:
             print(f'Error while parsing request text from {self.url}')
-        return text or None
+        return text
 
     def select(self, selector='body'):
         """Returns content that matches with selector or None"""
-        return self.html.select(selector)
+        if self.html:
+            return self.html.select(selector)
+        else:
+            return None
 
 
 class CoursesListPage(WebPage):
