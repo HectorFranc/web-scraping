@@ -82,7 +82,7 @@ class ReviewPage(WebPage):
         if self.reviews:
             return [self.get_review_info(review) for review in self.reviews]
         else:
-            return None
+            return []
 
     def get_review_info(self, review):
         return {
