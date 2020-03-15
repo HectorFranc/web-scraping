@@ -31,9 +31,9 @@ class Spider12(scrapy.Spider):
             yield response.follow(nota, callback=self.parse)
 
         # Link a la siguiente seccion
-        next_page = response.xpath('//a[@class="pagination-btn-next"]/@href').get()
-        if next_page is not None:
-            yield response.follow(next_page, callback=self.parse)
+        # next_page = response.xpath('//a[@class="pagination-btn-next"]/@href').get()
+        # if next_page is not None:
+        #     yield response.follow(next_page, callback=self.parse)
 
     def parse_nota(self, response):
         # Parse de la nota
